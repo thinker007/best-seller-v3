@@ -43,8 +43,8 @@ def multiparse(links):
 def parse(url):
     if url in start_urls:
         async_list = []
+        print (url)
         for i in xrange(1, 6):
-            print (url+'?&pg={}'.format(i))
             rs = (grequests.get(url+'?&pg={}'.format(i), hooks = {'response' : scrape}))
             async_list.append(rs)
         grequests.map(async_list)
@@ -57,8 +57,8 @@ def parse(url):
             asins = pool.map(multiparse, links_lists)
             for asin in asins:
                 async_list = []
+                print (asin)
                 for i in xrange(1, 6):
-                    print (asin+'?&pg={}'.format(i))
                     rs = (grequests.get(asin+'?&pg={}'.format(i), hooks = {'response' : scrape}))
                     async_list.append(rs)
                 parse(asin)
