@@ -23,15 +23,30 @@ pool = Pool(cpu_count() * 20)
 
 def scrape(response, **kwargs):
         listing_soup = bs(response.text, 'lxml')
-        asin_nums = listing_soup.find_all('div', 'zg_itemImageImmersion')
+        asin_nums = listing_soup.find_all('div', 'zg_itemImmersion')
         for asin_num in asin_nums:
             asin = ''
             try:
-                asin = asin_num.a['href'].split('dp/')[-1].strip()
+                asin = asin_num.find('a')['href'].split('dp/')[-1].strip()
+            except:
+                pass
+            amazon_price = ''
+            try:
+                amazon_price = asin_num.find('strong', 'price').text.strip()
+            except:
+                pass
+            total_offer_count = ''
+            try:
+                total_offer_count = asin_num.find('div', 'zg_usedPrice').find('a').text.strip().split(u'\xa0')[0].replace('used & new', '')
+            except:
+                pass
+            lowest_price = ''
+            try:
+                lowest_price = asin_num.find('div', 'zg_usedPrice').find('span', 'price').text.strip()
             except:
                 pass
             today_date = str(datetime.now())
-            scraperwiki.sqlite.save(unique_keys=['Date'], data={'ASIN': asin, 'Date': today_date})
+            scraperwiki.sqlite.save(unique_keys=['Date'], data={'ASIN': asin, 'Date': today_date, 'Amazon Price': amazon_price, 'Total Offer Count': total_offer_count, 'Lowest Price': lowest_price})
 
 
 def multiparse(links):
